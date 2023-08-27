@@ -29,6 +29,9 @@ pragma solidity ^0.8.19;
  * @notice Creating a sample raffle contract
  * @dev Implements Chainlink VRF
  */
+///Insufficient funds sent
+error Raffle__NotEnoughEthSent();
+
 contract Raffle {
     uint256 private immutable i_entraceFee;
 
@@ -36,7 +39,11 @@ contract Raffle {
         i_entraceFee = _entranceFee;
     }
 
-    function enterRaffle() public payable {}
+    function enterRaffle() external payable {
+        if (msg.value < i_entraceFee) {
+            revert Raffle__NotEnoughEthSent();
+        }
+    }
 
     function pickWinner() public {}
 
