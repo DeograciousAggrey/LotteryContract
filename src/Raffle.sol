@@ -34,16 +34,17 @@ import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/interface
 import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
 ///Insufficient funds sent
-error Raffle__NotEnoughEthSent();
-error Raffle__TransferFailed();
-error Raffle__RaffleNotOpen();
-error Raffle__UpkeepNotNeeded(
-    uint256 balance,
-    uint256 playersLength,
-    uint256 raffleState
-);
 
 contract Raffle is VRFConsumerBaseV2 {
+    error Raffle__NotEnoughEthSent();
+    error Raffle__TransferFailed();
+    error Raffle__RaffleNotOpen();
+    error Raffle__UpkeepNotNeeded(
+        uint256 balance,
+        uint256 playersLength,
+        uint256 raffleState
+    );
+
     /** Type Declarations */
     enum RaffleState {
         OPEN,
@@ -164,5 +165,13 @@ contract Raffle is VRFConsumerBaseV2 {
     /** Getter Functions */
     function getEntranceFee() external view returns (uint256) {
         return i_entraceFee;
+    }
+
+    function getRaffleState() external view returns (RaffleState) {
+        return s_raffleState;
+    }
+
+    function getPlayer(uint256 index) external view returns (address) {
+        return s_players[index];
     }
 }
