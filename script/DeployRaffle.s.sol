@@ -23,7 +23,8 @@ contract DeployRaffle is Script {
         if (_subscriptionId == 0) {
             CreateSubscription createSubscription = new CreateSubscription();
             _subscriptionId = createSubscription.createSubscription(
-                _vrfCoordinator
+                _vrfCoordinator,
+                deployerKey
             );
 
             //Fund it
@@ -31,11 +32,12 @@ contract DeployRaffle is Script {
             fundSubscription.fundSubscription(
                 _vrfCoordinator,
                 _subscriptionId,
-                link
+                link,
+                deployerKey
             );
         }
 
-        vm.startBroadcast();
+        vm.startBroadcast(deployerKey);
         Raffle raffle = new Raffle(
             _entranceFee,
             _interval,

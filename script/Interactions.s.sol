@@ -11,16 +11,25 @@ import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
 contract CreateSubscription is Script {
     function CreateSubscriptionUsingConfig() public returns (uint64) {
         HelperConfig helperConfig = new HelperConfig();
-        (, , address _vrfCoordinator, , , , , ) = helperConfig
-            .activeNetworkConfig();
-        return createSubscription(_vrfCoordinator);
+        (
+            ,
+            ,
+            address _vrfCoordinator,
+            ,
+            ,
+            ,
+            ,
+            uint256 deployerKey
+        ) = helperConfig.activeNetworkConfig();
+        return createSubscription(_vrfCoordinator, deployerKey);
     }
 
     function createSubscription(
-        address _vrfCoordinator
+        address _vrfCoordinator,
+        uint256 deployerKey
     ) public returns (uint64) {
         console.log("Creating subscription on chainid: %s", block.chainid);
-        vm.startBroadcast();
+        vm.startBroadcast(deployerKey);
         uint64 subId = VRFCoordinatorV2Mock(_vrfCoordinator)
             .createSubscription();
         vm.stopBroadcast();
@@ -47,29 +56,30 @@ contract FundSubscription is Script {
             uint64 _subscriptionId,
             ,
             address link,
-
+            uint256 deployerKey
         ) = helperConfig.activeNetworkConfig();
-        fundSubscription(_vrfCoordinator, _subscriptionId, link);
+        fundSubscription(_vrfCoordinator, _subscriptionId, link, deployerKey);
     }
 
     function fundSubscription(
         address _vrfCoordinator,
         uint64 _subscriptionId,
-        address link
+        address link,
+        uint256 deployerKey
     ) public {
         console.log("Funding subscription %s :", _subscriptionId);
         console.log("Using vrfCoordinator %s :", _vrfCoordinator);
         console.log("On ChainId %s :", block.chainid);
 
         if (block.chainid == 31337) {
-            vm.startBroadcast();
+            vm.startBroadcast(deployerKey);
             VRFCoordinatorV2Mock(_vrfCoordinator).fundSubscription(
                 _subscriptionId,
                 FUND_AMOUNT
             );
             vm.stopBroadcast();
         } else {
-            vm.startBroadcast();
+            vm.startBroadcast(deployerKey);
             LinkToken(link).transferAndCall(
                 _vrfCoordinator,
                 FUND_AMOUNT,

@@ -167,17 +167,17 @@ contract RaffleTest is Test {
     }
 
     function testPerformUpkeepRevertsIfCheckUpkeepIsFalse() public {
-        //Arrange
-        uint256 curentBalance = 0;
+        // Arrange
+        uint256 currentBalance = 0;
         uint256 numPlayers = 0;
-        uint256 raffleState = 0;
-
+        Raffle.RaffleState rState = raffle.getRaffleState();
+        // Act / Assert
         vm.expectRevert(
             abi.encodeWithSelector(
                 Raffle.Raffle__UpkeepNotNeeded.selector,
-                curentBalance,
+                currentBalance,
                 numPlayers,
-                raffleState
+                rState
             )
         );
         raffle.performUpkeep("");
@@ -219,6 +219,7 @@ contract RaffleTest is Test {
     function testFulfillRandomWordsPicksAWinnerResetsAndSendsMoney()
         public
         raffleEnteredAndTimePassed
+        skipFork
     {
         //Arrange
         uint256 additionalEntrants = 500;
