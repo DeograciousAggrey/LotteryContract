@@ -36,7 +36,8 @@ contract RaffleTest is Test {
             _gasLane,
             _subscriptionId,
             _callbackGasLimit,
-            link
+            link,
+
         ) = helperConfig.activeNetworkConfig();
         vm.deal(PLAYER, STARTING_USER_BALANCE);
     }
@@ -148,6 +149,13 @@ contract RaffleTest is Test {
     // performUpkeep tests                 //
     /////////////////////////////////////////
 
+    modifier skipFork() {
+        if (block.chainid != 31337) {
+            return;
+        }
+        _;
+    }
+
     function testPerformUpkeepCanOnlyRuynIfCheckUpkeepIsTrue() public {
         //Arrange
         vm.prank(PLAYER);
@@ -199,7 +207,7 @@ contract RaffleTest is Test {
 
     function testFulfillRandomWordsCanOnlybeCalledAfterPerformUpkeep(
         uint256 randomRequestId
-    ) public raffleEnteredAndTimePassed {
+    ) public raffleEnteredAndTimePassed skipFork {
         //Arrange
         vm.expectRevert("nonexistent request");
         VRFCoordinatorV2Mock(_vrfCoordinator).fulfillRandomWords(

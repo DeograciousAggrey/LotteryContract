@@ -11,7 +11,7 @@ import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
 contract CreateSubscription is Script {
     function CreateSubscriptionUsingConfig() public returns (uint64) {
         HelperConfig helperConfig = new HelperConfig();
-        (, , address _vrfCoordinator, , , , ) = helperConfig
+        (, , address _vrfCoordinator, , , , , ) = helperConfig
             .activeNetworkConfig();
         return createSubscription(_vrfCoordinator);
     }
@@ -46,7 +46,8 @@ contract FundSubscription is Script {
             ,
             uint64 _subscriptionId,
             ,
-            address link
+            address link,
+
         ) = helperConfig.activeNetworkConfig();
         fundSubscription(_vrfCoordinator, _subscriptionId, link);
     }
@@ -87,13 +88,14 @@ contract AddConsumer is Script {
     function addConsumer(
         address _raffle,
         address _vrfCoordinator,
-        uint64 _subscriptionId
+        uint64 _subscriptionId,
+        uint256 deployerKey
     ) public {
         console.log("Adding consumer to raffle %s :", _raffle);
         console.log("Using vrfCoordinator %s :", _vrfCoordinator);
         console.log("On ChainId %s :", block.chainid);
 
-        vm.startBroadcast();
+        vm.startBroadcast(deployerKey);
         VRFCoordinatorV2Mock(_vrfCoordinator).addConsumer(
             _subscriptionId,
             _raffle
@@ -110,9 +112,10 @@ contract AddConsumer is Script {
             ,
             uint64 _subscriptionId,
             ,
-
+            ,
+            uint256 deployerKey
         ) = helperConfig.activeNetworkConfig();
-        addConsumer(_raffle, _vrfCoordinator, _subscriptionId);
+        addConsumer(_raffle, _vrfCoordinator, _subscriptionId, deployerKey);
     }
 
     function run() external {
